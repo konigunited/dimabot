@@ -1,0 +1,17 @@
+[Unit]
+Description=Dimabot Telegram onboarding bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/dimabot
+EnvironmentFile=/etc/dimabot.env
+ExecStart=/opt/dimabot/.venv/bin/python -m bot.main
+Restart=on-failure
+RestartSec=5
+User=dimabot
+Group=dimabot
+
+[Install]
+WantedBy=multi-user.target

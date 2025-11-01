@@ -1,0 +1,26 @@
+[project]
+name = "dimabot"
+version = "0.1.0"
+description = "Telegram onboarding bot with resilient deployment tooling"
+authors = [{name = "Automation", email = "automation@example.com"}]
+requires-python = ">=3.11"
+dependencies = [
+    "python-telegram-bot==20.7",
+    "python-dotenv==1.0.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==7.4.4",
+]
+
+[project.urls]
+homepage = "https://example.com"
+
+[build-system]
+requires = ["setuptools>=67.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["bot*"]
