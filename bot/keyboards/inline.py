@@ -17,7 +17,7 @@ def get_courses_keyboard() -> InlineKeyboardMarkup:
     """Подменю Курсы"""
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="🏆 Онлайн-курс", url="https://speakbysteps.ru/tariffs/")],
-        [InlineKeyboardButton(text="🎓 Мини-урок 'Места'", url="https://speakbysteps.ru/tariff-mini/")],
+        [InlineKeyboardButton(text="🎓 Мини-урок 'Места'", callback_data="mini_lesson")],
         [InlineKeyboardButton(text="◀️ Назад в меню", callback_data="back_to_menu")]
     ])
     return keyboard

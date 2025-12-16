@@ -13,7 +13,7 @@ from aiogram.enums import ParseMode
 
 from config import settings
 from database.db import init_db
-from bot.handlers import start, products, help
+from bot.handlers import start, products, help, mini_lesson
 
 # Настройка логирования
 logging.basicConfig(
@@ -45,6 +45,7 @@ async def main():
     dp.include_router(start.router)
     dp.include_router(products.router)
     dp.include_router(help.router)
+    dp.include_router(mini_lesson.router)
 
     # Инициализация БД
     logger.info("Инициализация базы данных...")
