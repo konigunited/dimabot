@@ -1,0 +1,34 @@
+{
+  "name": "english-prompts-bot",
+  "version": "1.0.0",
+  "description": "Telegram bot for selling ChatGPT English learning prompts",
+  "main": "dist/bot.js",
+  "scripts": {
+    "dev": "tsx watch src/bot.ts",
+    "build": "tsc",
+    "start": "node dist/bot.js"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "grammy"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@a2seven/yoo-checkout": "^1.1.4",
+    "better-sqlite3": "^12.4.6",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "grammy": "^1.38.4",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/express": "^5.0.6",
+    "@types/node": "^24.10.1",
+    "@types/uuid": "^10.0.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}
