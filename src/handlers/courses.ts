@@ -1,5 +1,5 @@
 import { Context, InlineKeyboard } from 'grammy';
-import { getCourseById } from '../courses';
+import { getCourseById, courseGuides } from '../courses';
 import {
   getCoursesMenuKeyboard,
   getCourseWelcomeKeyboard,
@@ -72,25 +72,19 @@ export async function handleGetGuide(ctx: Context) {
 
   await ctx.answerCallbackQuery('📎 Отправляю гайд...');
 
-  // Отправляем сообщение
-  await ctx.reply(`✅ **Отлично!**
+  // Получаем текст гайда
+  const guideText = courseGuides[courseId];
 
-Вот твой мини-гайд *"Как не забывать слова и говорить свободно"* 👇`, {
-    parse_mode: 'Markdown',
-  });
-
-  // Проверяем существование файла
-  const guidePath = path.join(process.cwd(), course.guideUrl || 'assets/guide.pdf');
-
-  if (fs.existsSync(guidePath)) {
-    // Отправляем PDF
-    await ctx.replyWithDocument(new InputFile(guidePath));
+  if (guideText) {
+    // Отправляем текст гайда
+    await ctx.reply(guideText, {
+      parse_mode: 'Markdown',
+    });
   } else {
-    // Если файла нет, отправляем заглушку
-    await ctx.reply(`📄 [ЗДЕСЬ БУДЕТ PDF-ГАЙД]
+    // Если гайда нет, отправляем заглушку
+    await ctx.reply(`📘 **Гайд для этого курса**
 
-⚠️ Для MVP: добавь файл по пути: ${course.guideUrl}
-Или замени guideUrl в courses.ts на реальный путь.`);
+Скоро здесь будет полезная информация!`);
   }
 
   // Предложение пройти урок
