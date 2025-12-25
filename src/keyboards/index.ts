@@ -62,14 +62,6 @@ export function getAfterPaymentKeyboard() {
     .text('🏠 Главное меню', CallbackAction.MAIN_MENU);
 }
 
-// Клавиатура мок-оплаты (для MVP)
-export function getMockPaymentKeyboard(promptId: string) {
-  return new InlineKeyboard()
-    .text('🔐 Оплатить (мок)', `${CallbackAction.PAY}:${promptId}`)
-    .row()
-    .text('⬅️ Отменить', `${CallbackAction.PROMPT}:${promptId === 'all' ? prompts[0].id : promptId}`);
-}
-
 // ========== МЕНЮ КУРСОВ ==========
 
 // Меню выбора курсов

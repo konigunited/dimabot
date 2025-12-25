@@ -6,7 +6,6 @@ import {
   getAllPromptsKeyboard,
   getMainMenuKeyboard,
   getPromptsMenuKeyboard,
-  getMockPaymentKeyboard,
   getAfterPaymentKeyboard,
 } from '../keyboards';
 import { createOrder, updateOrderStatus, getOrderByPaymentId } from '../database';
@@ -138,73 +137,6 @@ export async function handleBuyPrompt(ctx: Context) {
       reply_markup: new InlineKeyboard().text('🏠 Главное меню', CallbackAction.MAIN_MENU),
     });
   }
-}
-
-// Обработчик мок-оплаты (для MVP)
-export async function handleMockPayment(ctx: Context) {
-  if (!ctx.callbackQuery?.data || !ctx.from) return;
-
-  const promptId = ctx.callbackQuery.data.split(':')[1];
-
-  // Имитация успешной оплаты
-  await ctx.answerCallbackQuery('💳 Оплата прошла успешно!');
-
-  let content: string;
-  let title: string;
-
-  if (promptId === 'all') {
-    content = getAllPromptsContent();
-    title = 'Все промпты';
-  } else {
-    const prompt = getPromptById(promptId);
-    if (!prompt) return;
-    content = prompt.content;
-    title = prompt.title;
-  }
-
-  // Обновляем статус заказа в БД
-  // (для простоты MVP просто помечаем последний заказ пользователя как оплаченный)
-  // В реальной версии нужно искать заказ по orderId
-
-  const successMessage = `🎉 **Готово! Платёж получен**
-
-📥 Вот твой промпт 👇`;
-
-  await ctx.reply(successMessage, {
-    reply_markup: getAfterPaymentKeyboard(),
-    parse_mode: 'Markdown',
-  });
-
-  // Отправляем промпт отдельным сообщением
-  // Разбиваем на части, если текст слишком длинный (лимит Telegram - 4096 символов)
-  const MAX_LENGTH = 4000;
-  if (content.length <= MAX_LENGTH) {
-    await ctx.reply(content);
-  } else {
-    // Разбиваем на части
-    const parts = [];
-    for (let i = 0; i < content.length; i += MAX_LENGTH) {
-      parts.push(content.substring(i, i + MAX_LENGTH));
-    }
-
-    for (const part of parts) {
-      await ctx.reply(part);
-    }
-  }
-
-  // Инструкция
-  const instructionMessage = `📘 **Как пользоваться:**
-
-1️⃣ Скопируй весь текст промпта выше
-2️⃣ Вставь в ChatGPT
-3️⃣ Начинай тренировку 🔥
-
-💡 Хочешь больше промптов? Нажми кнопку ниже 👇`;
-
-  await ctx.reply(instructionMessage, {
-    reply_markup: getAfterPaymentKeyboard(),
-    parse_mode: 'Markdown',
-  });
 }
 
 // Обработчик кнопки "Главное меню"

@@ -7,7 +7,6 @@ import {
   handlePromptSelection,
   handleAllPrompts,
   handleBuyPrompt,
-  handleMockPayment,
   handleCheckPayment,
   handleMainMenu,
   handlePromptsMenu,
@@ -68,9 +67,6 @@ bot.callbackQuery(CallbackAction.ALL_PROMPTS, handleAllPrompts);
 
 // Кнопка "Оплатить"
 bot.callbackQuery(new RegExp(`^${CallbackAction.BUY}:`), handleBuyPrompt);
-
-// Мок-оплата
-bot.callbackQuery(new RegExp(`^${CallbackAction.PAY}:`), handleMockPayment);
 
 // Проверка реальной оплаты (БЕЗ webhook)
 bot.callbackQuery(new RegExp(`^${CallbackAction.CHECK_PAYMENT}:`), handleCheckPayment);
