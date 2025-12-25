@@ -8,7 +8,7 @@ import {
   getPromptsMenuKeyboard,
   getAfterPaymentKeyboard,
 } from '../keyboards';
-import { createOrder, updateOrderStatus, getOrderByPaymentId } from '../database';
+import { createOrder, updateOrderStatus, getOrderByPaymentId, saveUser } from '../database';
 import { createPayment, getPayment } from '../services/yukassa';
 import { InlineKeyboard } from 'grammy';
 
@@ -64,6 +64,9 @@ export async function handleBuyPrompt(ctx: Context) {
   if (!ctx.callbackQuery?.data || !ctx.from) return;
 
   const promptId = ctx.callbackQuery.data.split(':')[1];
+
+  // Сохраняем пользователя в БД (если его еще нет)
+  saveUser(ctx.from.id, ctx.from.username, ctx.from.first_name, ctx.from.last_name);
 
   let price: number;
   let title: string;
