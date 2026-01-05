@@ -45,15 +45,11 @@ export async function handleCourseSelection(ctx: Context) {
 
   const message = `${course.emoji} **${course.title}**
 
-👋 **Привет!**
-
-Здесь ты научишься передавать смысл, даже если слово вылетело из головы.
-
-Получай гайд и применяй знания уже сегодня!`;
+${course.description}`;
 
   await ctx.answerCallbackQuery();
   await ctx.reply(message, {
-    reply_markup: getCourseWelcomeKeyboard(courseId),
+    reply_markup: getBuyCourseKeyboard(courseId, course.purchaseUrl),
     parse_mode: 'Markdown',
   });
 }

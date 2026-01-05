@@ -114,12 +114,10 @@ export function getBuyCourseKeyboard(courseId: string, purchaseUrl?: string) {
   const keyboard = new InlineKeyboard();
 
   if (purchaseUrl) {
-    keyboard.url('🚀 Пройти полный курс', purchaseUrl).row();
+    keyboard.url('🚀 Перейти к курсу', purchaseUrl).row();
   }
 
-  keyboard
-    .text('⬅️ Все курсы', CallbackAction.COURSES_MENU)
-    .text('🏠 Главное меню', CallbackAction.MAIN_MENU);
+  keyboard.text('⬅️ Все курсы', CallbackAction.COURSES_MENU);
 
   return keyboard;
 }
