@@ -1,5 +1,5 @@
 import { InlineKeyboard } from 'grammy';
-import { prompts, ALL_PROMPTS_PRICE } from '../prompts';
+import { prompts } from '../prompts';
 import { courses } from '../courses';
 import { CallbackAction } from '../types';
 
@@ -29,9 +29,6 @@ export function getPromptsMenuKeyboard() {
       .row();
   });
 
-  // Кнопка "Все промпты разом"
-  keyboard.text('🎁 Все промпты разом', CallbackAction.ALL_PROMPTS).row();
-
   // Кнопка "Назад"
   keyboard.text('⬅️ Главное меню', CallbackAction.MAIN_MENU);
 
@@ -46,13 +43,6 @@ export function getProductKeyboard(promptId: string, price: number) {
     .text('⬅️ Все промпты', CallbackAction.PROMPTS_MENU);
 }
 
-// Клавиатура для всех промптов сразу
-export function getAllPromptsKeyboard() {
-  return new InlineKeyboard()
-    .text(`💳 Оплатить ${ALL_PROMPTS_PRICE}₽`, `${CallbackAction.BUY}:all`)
-    .row()
-    .text('⬅️ Все промпты', CallbackAction.PROMPTS_MENU);
-}
 
 // Клавиатура после оплаты промпта
 export function getAfterPaymentKeyboard() {

@@ -1,8 +1,10 @@
 import express, { Request, Response } from 'express';
-import { Bot } from 'grammy';
+import { Bot, InputFile } from 'grammy';
 import { updateOrderStatus } from '../database';
-import { getPromptById, getAllPromptsContent } from '../prompts';
+import { getPromptById } from '../prompts';
 import { getAfterPaymentKeyboard } from '../keyboards';
+import path from 'path';
+import fs from 'fs';
 
 const app = express();
 app.use(express.json());
@@ -64,58 +66,42 @@ async function handleYuKassaWebhook(req: Request, res: Response) {
  */
 async function sendPromptToUser(userId: number, promptId: string) {
   try {
-    let content: string;
-    let title: string;
-
-    if (promptId === 'all') {
-      content = getAllPromptsContent();
-      title = 'Все промпты';
-    } else {
-      const prompt = getPromptById(promptId);
-      if (!prompt) {
-        console.error(`Промпт с ID ${promptId} не найден`);
-        return;
-      }
-      content = prompt.content;
-      title = prompt.title;
+    const prompt = getPromptById(promptId);
+    if (!prompt) {
+      console.error(`Промпт с ID ${promptId} не найден`);
+      return;
     }
 
-    const successMessage = `🎉 Готово! Платёж получен.
+    const successMessage = `🎉 Готово! Платёж получен
 
-Вот твой промпт 👇`;
+📥 Вот твой промпт 👇`;
 
-    await bot.api.sendMessage(userId, successMessage, {
-      reply_markup: getAfterPaymentKeyboard(),
-    });
+    await bot.api.sendMessage(userId, successMessage);
 
-    // Отправляем промпт отдельным сообщением
-    // Разбиваем на части, если текст слишком длинный (лимит Telegram - 4096 символов)
-    const MAX_LENGTH = 4000;
-    if (content.length <= MAX_LENGTH) {
-      await bot.api.sendMessage(userId, content);
+    // Отправляем PDF файл
+    const pdfPath = path.join(process.cwd(), prompt.content);
+
+    if (fs.existsSync(pdfPath)) {
+      await bot.api.sendDocument(userId, new InputFile(pdfPath), {
+        caption: `📄 ${prompt.title}`,
+      });
     } else {
-      // Разбиваем на части
-      const parts = [];
-      for (let i = 0; i < content.length; i += MAX_LENGTH) {
-        parts.push(content.substring(i, i + MAX_LENGTH));
-      }
-
-      for (const part of parts) {
-        await bot.api.sendMessage(userId, part);
-      }
+      await bot.api.sendMessage(userId, `⚠️ Ошибка: PDF файл не найден`);
     }
 
     // Инструкция
-    const instructionMessage = `📘 Как пользоваться:
+    const instructionMessage = `📘 **Как пользоваться:**
 
-1️⃣ Скопируй весь текст промпта выше
-2️⃣ Вставь в ChatGPT
-3️⃣ Начинай тренировку 🔥
+1️⃣ Открой PDF файл выше
+2️⃣ Скопируй текст промпта
+3️⃣ Вставь в ChatGPT (или любую LLM: DeepSeek, Claude, Gemini)
+4️⃣ Начинай тренировку 🔥
 
-Если хочешь больше таких промптов — нажми кнопку ниже 👇`;
+💡 Хочешь больше промптов? Нажми кнопку ниже 👇`;
 
     await bot.api.sendMessage(userId, instructionMessage, {
       reply_markup: getAfterPaymentKeyboard(),
+      parse_mode: 'Markdown',
     });
 
     console.log(`✅ Промпт успешно отправлен пользователю ${userId}`);

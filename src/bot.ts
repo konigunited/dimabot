@@ -5,7 +5,6 @@ import { initWebhookServer } from './services/webhook';
 import { handleStart } from './handlers/start';
 import {
   handlePromptSelection,
-  handleAllPrompts,
   handleBuyPrompt,
   handleCheckPayment,
   handleMainMenu,
@@ -61,9 +60,6 @@ bot.callbackQuery(CallbackAction.SUPPORT, handleSupport);
 
 // Выбор конкретного промпта
 bot.callbackQuery(new RegExp(`^${CallbackAction.PROMPT}:`), handlePromptSelection);
-
-// Кнопка "Все промпты разом"
-bot.callbackQuery(CallbackAction.ALL_PROMPTS, handleAllPrompts);
 
 // Кнопка "Оплатить"
 bot.callbackQuery(new RegExp(`^${CallbackAction.BUY}:`), handleBuyPrompt);

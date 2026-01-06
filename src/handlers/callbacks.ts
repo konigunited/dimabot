@@ -1,9 +1,8 @@
-import { Context } from 'grammy';
+import { Context, InputFile } from 'grammy';
 import { CallbackAction } from '../types';
-import { getPromptById, getAllPromptsContent, prompts, ALL_PROMPTS_PRICE, WELCOME_MESSAGE, HELP_MESSAGE, SUPPORT_MESSAGE } from '../prompts';
+import { getPromptById, prompts, WELCOME_MESSAGE, HELP_MESSAGE, SUPPORT_MESSAGE } from '../prompts';
 import {
   getProductKeyboard,
-  getAllPromptsKeyboard,
   getMainMenuKeyboard,
   getPromptsMenuKeyboard,
   getAfterPaymentKeyboard,
@@ -11,6 +10,8 @@ import {
 import { createOrder, updateOrderStatus, getOrderByPaymentId, saveUser } from '../database';
 import { createPayment, getPayment } from '../services/yukassa';
 import { InlineKeyboard } from 'grammy';
+import path from 'path';
+import fs from 'fs';
 
 // Обработчик выбора конкретного промпта
 export async function handlePromptSelection(ctx: Context) {
@@ -37,27 +38,6 @@ ${prompt.description}
   });
 }
 
-// Обработчик "Все промпты разом"
-export async function handleAllPrompts(ctx: Context) {
-  const totalRegularPrice = prompts.reduce((sum, p) => sum + p.price, 0);
-  const discount = totalRegularPrice - ALL_PROMPTS_PRICE;
-
-  const message = `🎁 **Все промпты разом**
-
-Получи все ${prompts.length} промптов по специальной цене!
-
-📦 **Включает:**
-${prompts.map(p => `  ${p.emoji} ${p.title}`).join('\n')}
-
-💵 ~~${totalRegularPrice}₽~~ → **${ALL_PROMPTS_PRICE}₽**
-💰 **Экономия:** ${discount}₽`;
-
-  await ctx.answerCallbackQuery();
-  await ctx.reply(message, {
-    reply_markup: getAllPromptsKeyboard(),
-    parse_mode: 'Markdown',
-  });
-}
 
 // Обработчик нажатия кнопки "Оплатить"
 export async function handleBuyPrompt(ctx: Context) {
@@ -68,21 +48,14 @@ export async function handleBuyPrompt(ctx: Context) {
   // Сохраняем пользователя в БД (если его еще нет)
   saveUser(ctx.from.id, ctx.from.username, ctx.from.first_name, ctx.from.last_name);
 
-  let price: number;
-  let title: string;
-
-  if (promptId === 'all') {
-    price = ALL_PROMPTS_PRICE;
-    title = 'Все промпты';
-  } else {
-    const prompt = getPromptById(promptId);
-    if (!prompt) {
-      await ctx.answerCallbackQuery('Промпт не найден');
-      return;
-    }
-    price = prompt.price;
-    title = prompt.title;
+  const prompt = getPromptById(promptId);
+  if (!prompt) {
+    await ctx.answerCallbackQuery('Промпт не найден');
+    return;
   }
+
+  const price = prompt.price;
+  const title = prompt.title;
 
   // Создаем заказ в БД
   const orderId = createOrder(ctx.from.id, promptId, price);
@@ -206,53 +179,39 @@ export async function handleCheckPayment(ctx: Context) {
       // Обновляем статус заказа
       updateOrderStatus(order.id, 'paid', paymentId);
 
-      // Получаем контент промпта
-      let content: string;
-      let title: string;
-
-      if (order.prompt_id === 'all') {
-        content = getAllPromptsContent();
-        title = 'Все промпты';
-      } else {
-        const prompt = getPromptById(order.prompt_id);
-        if (!prompt) {
-          await ctx.reply('Ошибка: промпт не найден');
-          return;
-        }
-        content = prompt.content;
-        title = prompt.title;
-      }
-
       // Отправляем успешное сообщение
       const successMessage = `🎉 **Готово! Платёж получен**
 
 📥 Вот твой промпт 👇`;
 
       await ctx.reply(successMessage, {
-        reply_markup: getAfterPaymentKeyboard(),
         parse_mode: 'Markdown',
       });
 
-      // Отправляем промпт
-      const MAX_LENGTH = 4000;
-      if (content.length <= MAX_LENGTH) {
-        await ctx.reply(content);
+      // Отправляем PDF файл(ы)
+      const prompt = getPromptById(order.prompt_id);
+      if (!prompt) {
+        await ctx.reply('Ошибка: промпт не найден');
+        return;
+      }
+
+      const pdfPath = path.join(process.cwd(), prompt.content);
+
+      if (fs.existsSync(pdfPath)) {
+        await ctx.replyWithDocument(new InputFile(pdfPath), {
+          caption: `📄 ${prompt.title}`,
+        });
       } else {
-        const parts = [];
-        for (let i = 0; i < content.length; i += MAX_LENGTH) {
-          parts.push(content.substring(i, i + MAX_LENGTH));
-        }
-        for (const part of parts) {
-          await ctx.reply(part);
-        }
+        await ctx.reply(`⚠️ Ошибка: PDF файл не найден по пути: ${prompt.content}`);
       }
 
       // Инструкция
       const instructionMessage = `📘 **Как пользоваться:**
 
-1️⃣ Скопируй весь текст промпта выше
-2️⃣ Вставь в ChatGPT
-3️⃣ Начинай тренировку 🔥
+1️⃣ Открой PDF файл выше
+2️⃣ Скопируй текст промпта
+3️⃣ Вставь в ChatGPT (или любую LLM: DeepSeek, Claude, Gemini)
+4️⃣ Начинай тренировку 🔥
 
 💡 Хочешь больше промптов? Нажми кнопку ниже 👇`;
 
