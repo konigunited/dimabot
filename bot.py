@@ -9,7 +9,9 @@ from aiogram.fsm.storage.memory import MemoryStorage
 import config
 from keyboards.inline import (
     get_start_keyboard,
-    get_course_keyboard
+    get_course_keyboard,
+    get_courses_menu,
+    get_online_course_keyboard
 )
 
 # Настройка логирования
@@ -55,6 +57,52 @@ async def process_get_guide(callback: CallbackQuery):
     await callback.message.answer(
         text=config.GUIDE_SENT_TEXT,
         reply_markup=get_course_keyboard(config.COURSE_URL)
+    )
+
+
+# Обработчик кнопки "Курсы"
+@dp.callback_query(F.data == "show_courses")
+async def process_show_courses(callback: CallbackQuery):
+    """Показать меню курсов"""
+    await callback.answer()
+    await callback.message.answer(
+        text="📚 Выберите курс:",
+        reply_markup=get_courses_menu()
+    )
+
+
+# Обработчик кнопки "Назад"
+@dp.callback_query(F.data == "back_to_start")
+async def process_back_to_start(callback: CallbackQuery):
+    """Вернуться в начало"""
+    await callback.answer()
+    await callback.message.answer(
+        text=config.WELCOME_TEXT,
+        reply_markup=get_start_keyboard()
+    )
+
+
+# Обработчик онлайн курса
+@dp.callback_query(F.data == "online_course")
+async def process_online_course(callback: CallbackQuery):
+    """Показать описание онлайн курса"""
+    await callback.answer()
+    await callback.message.answer(
+        text=config.ONLINE_COURSE_DESCRIPTION,
+        reply_markup=get_online_course_keyboard()
+    )
+
+
+# Обработчик покупки онлайн курса
+@dp.callback_query(F.data == "buy_online_course")
+async def process_buy_online_course(callback: CallbackQuery):
+    """Обработка покупки онлайн курса"""
+    await callback.answer()
+
+    # TODO: Здесь будет интеграция с ЮКассой
+    await callback.message.answer(
+        "💳 Оплата курса\n\n"
+        "Функционал оплаты будет добавлен в следующей версии."
     )
 
 
