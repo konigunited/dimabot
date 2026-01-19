@@ -11,7 +11,8 @@ from keyboards.inline import (
     get_start_keyboard,
     get_course_keyboard,
     get_courses_menu,
-    get_online_course_keyboard
+    get_online_course_keyboard,
+    get_after_guide_keyboard
 )
 
 # Настройка логирования
@@ -56,7 +57,7 @@ async def process_get_guide(callback: CallbackQuery):
 
     await callback.message.answer(
         text=config.GUIDE_SENT_TEXT,
-        reply_markup=get_course_keyboard(config.COURSE_URL)
+        reply_markup=get_after_guide_keyboard()
     )
 
 
@@ -103,6 +104,28 @@ async def process_buy_online_course(callback: CallbackQuery):
     await callback.message.answer(
         "💳 Оплата курса\n\n"
         "Функционал оплаты будет добавлен в следующей версии."
+    )
+
+
+# Обработчик кнопки "Промты"
+@dp.callback_query(F.data == "show_prompts")
+async def process_show_prompts(callback: CallbackQuery):
+    """Показать раздел промтов"""
+    await callback.answer()
+    await callback.message.answer(
+        text=config.PROMPTS_TEXT,
+        reply_markup=get_start_keyboard()
+    )
+
+
+# Обработчик кнопки "Помощь"
+@dp.callback_query(F.data == "show_help")
+async def process_show_help(callback: CallbackQuery):
+    """Показать помощь"""
+    await callback.answer()
+    await callback.message.answer(
+        text=config.HELP_TEXT,
+        reply_markup=get_start_keyboard()
     )
 
 
