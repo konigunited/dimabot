@@ -33,9 +33,69 @@ def get_online_course_keyboard():
     ])
     return keyboard
 
-def get_after_guide_keyboard():
-    """Клавиатура после получения мини-урока"""
+# Клавиатуры для мини-урока
+def get_lesson_task1_keyboard():
+    """Клавиатура для задания 1"""
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="a) kitchen", callback_data="lesson_task1_a")],
+        [InlineKeyboardButton(text="b) bedroom", callback_data="lesson_task1_b")],
+        [InlineKeyboardButton(text="c) bathroom", callback_data="lesson_task1_c")]
+    ])
+    return keyboard
+
+def get_lesson_task1_next():
+    """Кнопка после задания 1"""
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="Да, давай еще примеры", callback_data="lesson_task2")]
+    ])
+    return keyboard
+
+def get_lesson_task2_keyboard():
+    """Клавиатура для задания 2 - множественный выбор"""
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="1) a plane ✓", callback_data="lesson_task2_done")],
+        [InlineKeyboardButton(text="2) a latter", callback_data="lesson_task2_done")],
+        [InlineKeyboardButton(text="3) a suitcase ✓", callback_data="lesson_task2_done")],
+        [InlineKeyboardButton(text="4) a cat", callback_data="lesson_task2_done")],
+        [InlineKeyboardButton(text="5) a flight ticket ✓", callback_data="lesson_task2_done")],
+        [InlineKeyboardButton(text="6) a gate ✓", callback_data="lesson_task2_done")]
+    ])
+    return keyboard
+
+def get_lesson_task2_next():
+    """Кнопка после задания 2"""
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="Логику улавливаю. Давай закрепим", callback_data="lesson_task3")]
+    ])
+    return keyboard
+
+def get_lesson_task3_keyboard():
+    """Клавиатура для задания 3"""
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="a) café", callback_data="lesson_task3_a")],
+        [InlineKeyboardButton(text="b) gym", callback_data="lesson_task3_b")],
+        [InlineKeyboardButton(text="c) post office", callback_data="lesson_task3_c")]
+    ])
+    return keyboard
+
+def get_lesson_task3_next():
+    """Кнопка после задания 3"""
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="Понял!", callback_data="lesson_task4")]
+    ])
+    return keyboard
+
+def get_lesson_task4_keyboard():
+    """Клавиатура для задания 4"""
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🚀 Пройти мини-курс 'Места'", callback_data="lesson_final")]
+    ])
+    return keyboard
+
+def get_lesson_final_keyboard(course_url):
+    """Финальная клавиатура мини-урока"""
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🔗 Перейти к мини-курсу на сайте", url=course_url)],
         [InlineKeyboardButton(text="◀️ Назад к курсам", callback_data="show_courses")]
     ])
     return keyboard
