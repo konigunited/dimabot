@@ -68,10 +68,10 @@ async def process_lesson_task1_answer(callback: CallbackQuery):
     )
 
 
-# Переход к заданию 2 - викторина
+# Переход к заданию 2 - викторина с множественным выбором
 @dp.callback_query(F.data == "lesson_task2")
 async def process_lesson_task2(callback: CallbackQuery):
-    """Задание 2 - викторина"""
+    """Задание 2 - викторина с множественным выбором"""
     await callback.answer()
 
     # Отправляем текст вступления
@@ -82,7 +82,7 @@ async def process_lesson_task2(callback: CallbackQuery):
 
     await callback.message.answer(text=intro_text)
 
-    # Отправляем викторину
+    # Отправляем викторину с множественным выбором
     await callback.message.answer_poll(
         question="Выбери предметы, которые относятся к аэропорту:",
         options=[
@@ -93,9 +93,14 @@ async def process_lesson_task2(callback: CallbackQuery):
             "a flight ticket",
             "a gate"
         ],
-        type="quiz",
-        correct_option_id=0,  # a plane - правильный ответ
-        explanation=config.LESSON_TASK2_EXPLANATION,
+        type="regular",  # Обычный poll, не quiz
+        allows_multiple_answers=True,  # Разрешаем выбор нескольких вариантов
+        is_anonymous=False
+    )
+
+    # Отправляем объяснение и кнопку продолжения
+    await callback.message.answer(
+        text=config.LESSON_TASK2_EXPLANATION,
         reply_markup=get_lesson_task2_next()
     )
 
@@ -141,7 +146,7 @@ async def process_lesson_task4(callback: CallbackQuery):
     await callback.answer()
     await callback.message.answer(
         text=config.LESSON_TASK4_TEXT,
-        reply_markup=get_lesson_task4_keyboard(config.COURSE_URL)
+        reply_markup=get_lesson_task4_keyboard(config.MINI_LESSON_URL)
     )
 
 

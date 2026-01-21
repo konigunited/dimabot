@@ -5,6 +5,7 @@ load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 COURSE_URL = os.getenv("COURSE_URL", "https://your-course-website.com")
+MINI_LESSON_URL = "https://speakbysteps.ru/tariff-mini/"
 
 # Пути к файлам
 AUDIO_TASK3_PATH = "assets/мини-уроки/Задание3.mp3"
