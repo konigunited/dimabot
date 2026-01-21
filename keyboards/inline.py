@@ -104,6 +104,14 @@ def get_prompt_detail_keyboard(prompt_id):
 def get_help_keyboard():
     """Клавиатура для помощи"""
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="💬 Поддержка", callback_data="show_support")],
         [InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_start")]
+    ])
+    return keyboard
+
+def get_support_keyboard():
+    """Клавиатура для поддержки"""
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="◀️ Назад к помощи", callback_data="show_help")]
     ])
     return keyboard

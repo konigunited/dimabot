@@ -20,7 +20,8 @@ from keyboards.inline import (
     get_lesson_task4_keyboard,
     get_prompts_menu,
     get_prompt_detail_keyboard,
-    get_help_keyboard
+    get_help_keyboard,
+    get_support_keyboard
 )
 
 # Настройка логирования
@@ -210,7 +211,20 @@ async def process_show_help(callback: CallbackQuery):
     await callback.answer()
     await callback.message.answer(
         text=config.HELP_TEXT,
-        reply_markup=get_help_keyboard()
+        reply_markup=get_help_keyboard(),
+        parse_mode="Markdown"
+    )
+
+
+# Обработчик кнопки "Поддержка"
+@dp.callback_query(F.data == "show_support")
+async def process_show_support(callback: CallbackQuery):
+    """Показать поддержку"""
+    await callback.answer()
+    await callback.message.answer(
+        text=config.SUPPORT_TEXT,
+        reply_markup=get_support_keyboard(),
+        parse_mode="Markdown"
     )
 
 
