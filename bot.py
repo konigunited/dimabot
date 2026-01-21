@@ -17,8 +17,7 @@ from keyboards.inline import (
     get_lesson_task2_next,
     get_lesson_task3_keyboard,
     get_lesson_task3_next,
-    get_lesson_task4_keyboard,
-    get_lesson_final_keyboard
+    get_lesson_task4_keyboard
 )
 
 # Настройка логирования
@@ -69,18 +68,34 @@ async def process_lesson_task1_answer(callback: CallbackQuery):
     )
 
 
-# Переход к заданию 2
+# Переход к заданию 2 - викторина
 @dp.callback_query(F.data == "lesson_task2")
 async def process_lesson_task2(callback: CallbackQuery):
-    """Задание 2"""
+    """Задание 2 - викторина"""
     await callback.answer()
 
-    # Отправляем текст задания с вариантами
-    await callback.message.answer(text=config.LESSON_TASK2_TEXT)
+    # Отправляем текст вступления
+    intro_text = """💭 Задание 2
 
-    # Сразу отправляем объяснение с кнопкой
-    await callback.message.answer(
-        text=config.LESSON_TASK2_EXPLANATION,
+Ты забыл слово "airport".
+Часто, мы не можем сказать иначе, потому что не думаем о том, что находится в забытом месте."""
+
+    await callback.message.answer(text=intro_text)
+
+    # Отправляем викторину
+    await callback.message.answer_poll(
+        question="Выбери предметы, которые относятся к аэропорту:",
+        options=[
+            "a plane",
+            "a latter",
+            "a suitcase",
+            "a cat",
+            "a flight ticket",
+            "a gate"
+        ],
+        type="quiz",
+        correct_option_id=0,  # a plane - правильный ответ
+        explanation=config.LESSON_TASK2_EXPLANATION,
         reply_markup=get_lesson_task2_next()
     )
 
@@ -119,25 +134,14 @@ async def process_lesson_task3_answer(callback: CallbackQuery):
     )
 
 
-# Переход к заданию 4 (мотивация)
+# Переход к заданию 4 (финал с мотивацией и предложением курса)
 @dp.callback_query(F.data == "lesson_task4")
 async def process_lesson_task4(callback: CallbackQuery):
-    """Задание 4 - мотивация"""
+    """Задание 4 - финальное сообщение с предложением курса"""
     await callback.answer()
     await callback.message.answer(
         text=config.LESSON_TASK4_TEXT,
-        reply_markup=get_lesson_task4_keyboard()
-    )
-
-
-# Финальное сообщение
-@dp.callback_query(F.data == "lesson_final")
-async def process_lesson_final(callback: CallbackQuery):
-    """Финальное сообщение с переходом на курс"""
-    await callback.answer()
-    await callback.message.answer(
-        text=config.LESSON_FINAL_TEXT,
-        reply_markup=get_lesson_final_keyboard(config.COURSE_URL)
+        reply_markup=get_lesson_task4_keyboard(config.COURSE_URL)
     )
 
 

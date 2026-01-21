@@ -73,17 +73,10 @@ def get_lesson_task3_next():
     ])
     return keyboard
 
-def get_lesson_task4_keyboard():
-    """Клавиатура для задания 4"""
+def get_lesson_task4_keyboard(course_url):
+    """Финальная клавиатура для задания 4"""
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="🚀 Пройти мини-курс 'Места'", callback_data="lesson_final")]
-    ])
-    return keyboard
-
-def get_lesson_final_keyboard(course_url):
-    """Финальная клавиатура мини-урока"""
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="🔗 Перейти к мини-курсу на сайте", url=course_url)],
+        [InlineKeyboardButton(text="🚀 Пройти мини-курс 'Места'", url=course_url)],
         [InlineKeyboardButton(text="◀️ Назад к курсам", callback_data="show_courses")]
     ])
     return keyboard
