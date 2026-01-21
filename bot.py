@@ -32,6 +32,9 @@ bot = Bot(token=config.BOT_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 
+# Хранилище активных платежей: {user_id: {"payment_id": "...", "prompt_id": "..."}}
+active_payments = {}
+
 
 # Обработчик команды /start
 @dp.message(CommandStart())
@@ -295,20 +298,29 @@ async def process_buy_prompt(callback: CallbackQuery):
         # Получаем ссылку на оплату
         payment_url = payment.confirmation.confirmation_url
 
+        # Сохраняем payment_id для пользователя
+        active_payments[callback.from_user.id] = {
+            "payment_id": payment.id,
+            "prompt_id": prompt_id
+        }
+
         # Отправляем ссылку пользователю
         price_rub = prompt["price"] / 100
         from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="💳 Перейти к оплате", url=payment_url)],
+            [InlineKeyboardButton(text="✅ Я оплатил, проверить", callback_data=f"check_payment_{prompt_id}")],
             [InlineKeyboardButton(text="◀️ Назад к промптам", callback_data="show_prompts")]
         ])
 
         await callback.message.answer(
             f"💳 Оплата промпта **{prompt['title']}**\n\n"
             f"Стоимость: {price_rub:.0f} руб.\n\n"
-            f"Нажмите кнопку ниже для перехода к оплате.\n"
-            f"После успешной оплаты промпт будет отправлен вам автоматически.",
+            f"1. Нажмите «Перейти к оплате»\n"
+            f"2. Оплатите любым способом\n"
+            f"3. Вернитесь сюда и нажмите «Я оплатил, проверить»\n\n"
+            f"Промпт придет автоматически после проверки оплаты!",
             reply_markup=keyboard,
             parse_mode="Markdown"
         )
@@ -325,6 +337,104 @@ async def process_buy_prompt(callback: CallbackQuery):
         await callback.message.answer(
             "⚠️ Произошла ошибка при создании платежа.\n"
             "Пожалуйста, попробуйте позже или свяжитесь с поддержкой: @dimalingvist"
+        )
+
+
+# Обработчик проверки оплаты
+@dp.callback_query(F.data.startswith("check_payment_"))
+async def process_check_payment(callback: CallbackQuery):
+    """Проверка статуса оплаты и отправка файла"""
+    await callback.answer()
+
+    user_id = callback.from_user.id
+
+    # Проверяем есть ли активный платеж
+    if user_id not in active_payments:
+        await callback.message.answer(
+            "❌ Платеж не найден.\n\n"
+            "Пожалуйста, сначала создайте заказ, нажав кнопку «Купить»."
+        )
+        return
+
+    payment_info = active_payments[user_id]
+    payment_id = payment_info["payment_id"]
+    prompt_id = payment_info["prompt_id"]
+
+    # Находим промпт
+    prompt = next((p for p in config.PROMPTS if p["id"] == prompt_id), None)
+    if not prompt:
+        await callback.message.answer("❌ Промпт не найден")
+        return
+
+    try:
+        from yookassa import Configuration, Payment
+
+        # Конфигурация ЮКассы
+        Configuration.account_id = os.getenv("YUKASSA_SHOP_ID")
+        Configuration.secret_key = os.getenv("YUKASSA_SECRET_KEY")
+
+        # Получаем информацию о платеже
+        payment = Payment.find_one(payment_id)
+
+        if payment.status == "succeeded":
+            # Оплата прошла успешно!
+            await callback.message.answer("✅ Оплата подтверждена! Отправляю промпт...")
+
+            # Отправляем PDF файл
+            if os.path.exists(prompt["file"]):
+                document = FSInputFile(prompt["file"])
+                await callback.message.answer_document(
+                    document,
+                    caption=f"🎉 **{prompt['title']}**\n\nСпасибо за покупку!\n\n"
+                            f"Скопируй текст из PDF и вставь в ChatGPT (DeepSeek, Claude, Gemini или любую LLM).\n"
+                            f"Начинай тренировку!",
+                    parse_mode="Markdown"
+                )
+                logger.info(f"Промпт {prompt_id} отправлен пользователю {user_id}")
+
+                # Удаляем из активных платежей
+                del active_payments[user_id]
+
+            else:
+                await callback.message.answer(
+                    "⚠️ Файл промпта не найден на сервере.\n"
+                    f"Пожалуйста, свяжитесь с поддержкой: @dimalingvist\n\n"
+                    f"Укажите ID заказа: `{payment_id}`",
+                    parse_mode="Markdown"
+                )
+
+        elif payment.status == "pending":
+            await callback.message.answer(
+                "⏳ Оплата еще не завершена.\n\n"
+                "Пожалуйста, завершите оплату и нажмите кнопку еще раз через несколько секунд."
+            )
+
+        elif payment.status == "waiting_for_capture":
+            await callback.message.answer(
+                "⏳ Платеж обрабатывается...\n\n"
+                "Подождите несколько секунд и нажмите кнопку еще раз."
+            )
+
+        else:
+            await callback.message.answer(
+                f"❌ Оплата не прошла (статус: {payment.status}).\n\n"
+                "Попробуйте создать новый заказ или свяжитесь с поддержкой: @dimalingvist"
+            )
+            # Удаляем неудачный платеж
+            del active_payments[user_id]
+
+    except ImportError:
+        await callback.message.answer(
+            "⚠️ Система проверки оплаты временно недоступна.\n"
+            "Пожалуйста, свяжитесь с поддержкой: @dimalingvist"
+        )
+    except Exception as e:
+        logger.error(f"Ошибка проверки платежа: {e}")
+        await callback.message.answer(
+            "⚠️ Произошла ошибка при проверке оплаты.\n"
+            f"Пожалуйста, свяжитесь с поддержкой: @dimalingvist\n\n"
+            f"Укажите ID заказа: `{payment_id}`",
+            parse_mode="Markdown"
         )
 
 
