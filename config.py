@@ -41,11 +41,11 @@ LESSON_TASK2_TEXT = """💭 Задание 2
 5) a flight ticket
 6) a gate"""
 
-LESSON_TASK2_EXPLANATION = """Вывод: намного проще передать смысл места, зная что там находится:
+LESSON_TASK2_EXPLANATION = """Вывод\\: намного проще передать смысл места\\, зная что там находится\\:
 
-I came to a place with planes and I had a flight ticket — Я пришел в место с самолетами и у меня был билет.
+I came to a place with planes and I had a flight ticket \\_\\_ Я пришел в место с самолетами и у меня был билет\\.
 
-||a plane, a suitcase, a flight ticket, a gate||"""
+||a plane\\, a suitcase\\, a flight ticket\\, a gate||"""
 
 LESSON_TASK3_TEXT = """🎧 Задание 3
 

@@ -101,7 +101,8 @@ async def process_lesson_task2(callback: CallbackQuery):
     # Отправляем объяснение и кнопку продолжения (правильные ответы под спойлером)
     await callback.message.answer(
         text=config.LESSON_TASK2_EXPLANATION,
-        reply_markup=get_lesson_task2_next()
+        reply_markup=get_lesson_task2_next(),
+        parse_mode="MarkdownV2"
     )
 
 
