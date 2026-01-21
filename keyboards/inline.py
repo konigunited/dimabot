@@ -80,3 +80,30 @@ def get_lesson_task4_keyboard(course_url):
         [InlineKeyboardButton(text="◀️ Назад к курсам", callback_data="show_courses")]
     ])
     return keyboard
+
+def get_prompts_menu(prompts):
+    """Меню промптов"""
+    buttons = []
+    for prompt in prompts:
+        buttons.append([InlineKeyboardButton(
+            text=f"{prompt['emoji']} {prompt['title']}",
+            callback_data=f"prompt_{prompt['id']}"
+        )])
+    buttons.append([InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_start")])
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
+    return keyboard
+
+def get_prompt_detail_keyboard(prompt_id):
+    """Клавиатура для деталей промпта"""
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="💳 Купить", callback_data=f"buy_prompt_{prompt_id}")],
+        [InlineKeyboardButton(text="◀️ Назад к промптам", callback_data="show_prompts")]
+    ])
+    return keyboard
+
+def get_help_keyboard():
+    """Клавиатура для помощи"""
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_start")]
+    ])
+    return keyboard

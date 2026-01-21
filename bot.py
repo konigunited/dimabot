@@ -17,7 +17,10 @@ from keyboards.inline import (
     get_lesson_task2_next,
     get_lesson_task3_keyboard,
     get_lesson_task3_next,
-    get_lesson_task4_keyboard
+    get_lesson_task4_keyboard,
+    get_prompts_menu,
+    get_prompt_detail_keyboard,
+    get_help_keyboard
 )
 
 # Настройка логирования
@@ -203,8 +206,9 @@ async def process_show_prompts(callback: CallbackQuery):
     """Показать раздел промтов"""
     await callback.answer()
     await callback.message.answer(
-        text=config.PROMPTS_TEXT,
-        reply_markup=get_start_keyboard()
+        text=config.PROMPTS_INTRO_TEXT,
+        reply_markup=get_prompts_menu(config.PROMPTS),
+        parse_mode="Markdown"
     )
 
 
@@ -215,8 +219,113 @@ async def process_show_help(callback: CallbackQuery):
     await callback.answer()
     await callback.message.answer(
         text=config.HELP_TEXT,
-        reply_markup=get_start_keyboard()
+        reply_markup=get_help_keyboard()
     )
+
+
+# Обработчик выбора конкретного промпта
+@dp.callback_query(F.data.startswith("prompt_"))
+async def process_prompt_detail(callback: CallbackQuery):
+    """Показать детали конкретного промпта"""
+    await callback.answer()
+
+    # Извлекаем ID промпта из callback_data
+    prompt_id = callback.data.replace("prompt_", "")
+
+    # Находим промпт по ID
+    prompt = next((p for p in config.PROMPTS if p["id"] == prompt_id), None)
+
+    if not prompt:
+        await callback.message.answer("Промпт не найден")
+        return
+
+    # Формируем сообщение с деталями
+    price_rub = prompt["price"] / 100
+    message = f"{prompt['emoji']} **{prompt['title']}**\n\n{prompt['description']}\n\n💰 **Цена:** {price_rub:.0f} руб."
+
+    await callback.message.answer(
+        text=message,
+        reply_markup=get_prompt_detail_keyboard(prompt_id),
+        parse_mode="Markdown"
+    )
+
+
+# Обработчик покупки промпта
+@dp.callback_query(F.data.startswith("buy_prompt_"))
+async def process_buy_prompt(callback: CallbackQuery):
+    """Обработка покупки промпта через ЮКассу"""
+    await callback.answer()
+
+    # Извлекаем ID промпта
+    prompt_id = callback.data.replace("buy_prompt_", "")
+
+    # Находим промпт
+    prompt = next((p for p in config.PROMPTS if p["id"] == prompt_id), None)
+
+    if not prompt:
+        await callback.message.answer("Промпт не найден")
+        return
+
+    try:
+        from yookassa import Configuration, Payment
+        import uuid
+
+        # Конфигурация ЮКассы
+        Configuration.account_id = os.getenv("YUKASSA_SHOP_ID")
+        Configuration.secret_key = os.getenv("YUKASSA_SECRET_KEY")
+
+        # Создаем платеж
+        payment = Payment.create({
+            "amount": {
+                "value": f"{prompt['price'] / 100:.2f}",
+                "currency": "RUB"
+            },
+            "confirmation": {
+                "type": "redirect",
+                "return_url": "https://t.me/speakbystepsbot"
+            },
+            "capture": True,
+            "description": prompt['title'],
+            "metadata": {
+                "user_id": callback.from_user.id,
+                "prompt_id": prompt_id
+            }
+        }, uuid.uuid4())
+
+        # Получаем ссылку на оплату
+        payment_url = payment.confirmation.confirmation_url
+
+        # Отправляем ссылку пользователю
+        price_rub = prompt["price"] / 100
+        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="💳 Перейти к оплате", url=payment_url)],
+            [InlineKeyboardButton(text="◀️ Назад к промптам", callback_data="show_prompts")]
+        ])
+
+        await callback.message.answer(
+            f"💳 Оплата промпта **{prompt['title']}**\n\n"
+            f"Стоимость: {price_rub:.0f} руб.\n\n"
+            f"Нажмите кнопку ниже для перехода к оплате.\n"
+            f"После успешной оплаты промпт будет отправлен вам автоматически.",
+            reply_markup=keyboard,
+            parse_mode="Markdown"
+        )
+
+        logger.info(f"Создан платеж {payment.id} для пользователя {callback.from_user.id}")
+
+    except ImportError:
+        await callback.message.answer(
+            "⚠️ Система оплаты временно недоступна.\n"
+            "Пожалуйста, свяжитесь с поддержкой: @dimalingvist"
+        )
+    except Exception as e:
+        logger.error(f"Ошибка создания платежа: {e}")
+        await callback.message.answer(
+            "⚠️ Произошла ошибка при создании платежа.\n"
+            "Пожалуйста, попробуйте позже или свяжитесь с поддержкой: @dimalingvist"
+        )
 
 
 async def main():
