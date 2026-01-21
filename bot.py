@@ -82,7 +82,7 @@ async def process_lesson_task2(callback: CallbackQuery):
 
     await callback.message.answer(text=intro_text)
 
-    # Отправляем викторину с множественным выбором
+    # Отправляем викторину с множественным выбором и сразу объяснение
     await callback.message.answer_poll(
         question="Выбери предметы, которые относятся к аэропорту:",
         options=[
@@ -98,10 +98,7 @@ async def process_lesson_task2(callback: CallbackQuery):
         is_anonymous=False
     )
 
-    # Ждём 30 секунд перед отправкой объяснения
-    await asyncio.sleep(30)
-
-    # Отправляем объяснение и кнопку продолжения
+    # Отправляем объяснение и кнопку продолжения (правильные ответы под спойлером)
     await callback.message.answer(
         text=config.LESSON_TASK2_EXPLANATION,
         reply_markup=get_lesson_task2_next()

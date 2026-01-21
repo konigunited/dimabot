@@ -45,7 +45,7 @@ LESSON_TASK2_EXPLANATION = """Вывод: намного проще переда
 
 I came to a place with planes and I had a flight ticket — Я пришел в место с самолетами и у меня был билет.
 
-(a plane, a suitcase, a flight ticket, a gate)"""
+||a plane, a suitcase, a flight ticket, a gate||"""
 
 LESSON_TASK3_TEXT = """🎧 Задание 3
 
