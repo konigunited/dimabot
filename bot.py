@@ -98,6 +98,9 @@ async def process_lesson_task2(callback: CallbackQuery):
         is_anonymous=False
     )
 
+    # Ждём 30 секунд перед отправкой объяснения
+    await asyncio.sleep(30)
+
     # Отправляем объяснение и кнопку продолжения
     await callback.message.answer(
         text=config.LESSON_TASK2_EXPLANATION,
