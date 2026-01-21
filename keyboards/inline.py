@@ -69,7 +69,7 @@ def get_lesson_task3_keyboard():
 def get_lesson_task3_next():
     """Кнопка после задания 3"""
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Понял!", callback_data="lesson_task4")]
+        [InlineKeyboardButton(text="Понятно", callback_data="lesson_task4")]
     ])
     return keyboard
 
