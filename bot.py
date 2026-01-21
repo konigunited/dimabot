@@ -14,7 +14,6 @@ from keyboards.inline import (
     get_online_course_keyboard,
     get_lesson_task1_keyboard,
     get_lesson_task1_next,
-    get_lesson_task2_keyboard,
     get_lesson_task2_next,
     get_lesson_task3_keyboard,
     get_lesson_task3_next,
@@ -75,17 +74,11 @@ async def process_lesson_task1_answer(callback: CallbackQuery):
 async def process_lesson_task2(callback: CallbackQuery):
     """Задание 2"""
     await callback.answer()
-    await callback.message.answer(
-        text=config.LESSON_TASK2_TEXT,
-        reply_markup=get_lesson_task2_keyboard()
-    )
 
+    # Отправляем текст задания с вариантами
+    await callback.message.answer(text=config.LESSON_TASK2_TEXT)
 
-# Обработчик задания 2 (любой клик ведет дальше)
-@dp.callback_query(F.data == "lesson_task2_done")
-async def process_lesson_task2_done(callback: CallbackQuery):
-    """Завершение задания 2"""
-    await callback.answer()
+    # Сразу отправляем объяснение с кнопкой
     await callback.message.answer(
         text=config.LESSON_TASK2_EXPLANATION,
         reply_markup=get_lesson_task2_next()

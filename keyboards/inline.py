@@ -50,20 +50,8 @@ def get_lesson_task1_next():
     ])
     return keyboard
 
-def get_lesson_task2_keyboard():
-    """Клавиатура для задания 2 - множественный выбор"""
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="1) a plane ✓", callback_data="lesson_task2_done")],
-        [InlineKeyboardButton(text="2) a latter", callback_data="lesson_task2_done")],
-        [InlineKeyboardButton(text="3) a suitcase ✓", callback_data="lesson_task2_done")],
-        [InlineKeyboardButton(text="4) a cat", callback_data="lesson_task2_done")],
-        [InlineKeyboardButton(text="5) a flight ticket ✓", callback_data="lesson_task2_done")],
-        [InlineKeyboardButton(text="6) a gate ✓", callback_data="lesson_task2_done")]
-    ])
-    return keyboard
-
 def get_lesson_task2_next():
-    """Кнопка после задания 2"""
+    """Кнопка после задания 2 (квиза)"""
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="Логику улавливаю. Давай закрепим", callback_data="lesson_task3")]
     ])
