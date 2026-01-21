@@ -25,10 +25,10 @@ def get_courses_menu():
     ])
     return keyboard
 
-def get_online_course_keyboard():
+def get_online_course_keyboard(course_url):
     """Клавиатура для онлайн курса"""
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="💳 Купить курс", callback_data="buy_online_course")],
+        [InlineKeyboardButton(text="💳 Купить курс", url=course_url)],
         [InlineKeyboardButton(text="◀️ Назад к курсам", callback_data="show_courses")]
     ])
     return keyboard

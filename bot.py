@@ -186,20 +186,8 @@ async def process_online_course(callback: CallbackQuery):
     await callback.answer()
     await callback.message.answer(
         text=config.ONLINE_COURSE_DESCRIPTION,
-        reply_markup=get_online_course_keyboard()
-    )
-
-
-# Обработчик покупки онлайн курса
-@dp.callback_query(F.data == "buy_online_course")
-async def process_buy_online_course(callback: CallbackQuery):
-    """Обработка покупки онлайн курса"""
-    await callback.answer()
-
-    # TODO: Здесь будет интеграция с ЮКассой
-    await callback.message.answer(
-        "💳 Оплата курса\n\n"
-        "Функционал оплаты будет добавлен в следующей версии."
+        reply_markup=get_online_course_keyboard(config.ONLINE_COURSE_URL),
+        parse_mode="Markdown"
     )
 
 
