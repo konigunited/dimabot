@@ -259,8 +259,20 @@ async def process_guide_speak_english(callback: CallbackQuery):
         document = FSInputFile(guide_path)
         await callback.message.answer_document(
             document,
-            caption="📖 **Как начать говорить на английском**\n\nНаучись передавать смысл, даже если слово вылетело из головы. Получай мини-урок и применяй знания уже сегодня!",
+            caption="📖 **Как начать говорить на английском**\n\nНаучись передавать смысл, даже если слово вылетело из головы. Применяй знания уже сегодня!",
             parse_mode="Markdown"
+        )
+        
+        # Кнопка для перехода к мини-уроку
+        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="🚀 Пройти мини-урок", callback_data="get_guide")],
+            [InlineKeyboardButton(text="◀️ Назад к гайдам", callback_data="show_guides")]
+        ])
+        
+        await callback.message.answer(
+            "👆 Прочитай гайд и пройди мини-урок, чтобы закрепить знания!",
+            reply_markup=keyboard
         )
     else:
         await callback.message.answer(f"❌ Файл гайда не найден: {guide_path}")
