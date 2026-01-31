@@ -248,7 +248,7 @@ async def process_guide_speak_english(callback: CallbackQuery):
     """Отправить гайд 'Как начать говорить на английском'"""
     await callback.answer("📎 Отправляю гайд...")
     
-    guide_path = "assets/гайды/Гайд_Как_начать_говорить_на_английском,_даже_если_слова_вылетают (1).pdf"
+    guide_path = "assets/гайды/Гайд_Как_начать_говорить_на_английском,_даже_если_слова_вылетают.pdf"
     
     if os.path.exists(guide_path):
         document = FSInputFile(guide_path)
