@@ -216,6 +216,51 @@ async def process_show_prompts(callback: CallbackQuery):
     )
 
 
+# Обработчик кнопки "Гайды"
+@dp.callback_query(F.data == "show_guides")
+async def process_show_guides(callback: CallbackQuery):
+    """Показать раздел гайдов"""
+    await callback.answer()
+    
+    guides_text = """📕 **Бесплатные гайды**
+
+Здесь ты найдёшь полезные материалы для изучения английского.
+
+Выбери гайд 👇"""
+    
+    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+    
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="📖 Как начать говорить на английском", callback_data="guide_speak_english")],
+        [InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_start")]
+    ])
+    
+    await callback.message.answer(
+        text=guides_text,
+        reply_markup=keyboard,
+        parse_mode="Markdown"
+    )
+
+
+# Обработчик выбора конкретного гайда
+@dp.callback_query(F.data == "guide_speak_english")
+async def process_guide_speak_english(callback: CallbackQuery):
+    """Отправить гайд 'Как начать говорить на английском'"""
+    await callback.answer("📎 Отправляю гайд...")
+    
+    guide_path = "assets/гайды/Гайд_Как_начать_говорить_на_английском,_даже_если_слова_вылетают (1).pdf"
+    
+    if os.path.exists(guide_path):
+        document = FSInputFile(guide_path)
+        await callback.message.answer_document(
+            document,
+            caption="📖 **Как начать говорить на английском**\n\nНаучись передавать смысл, даже если слово вылетело из головы. Получай мини-урок и применяй знания уже сегодня!",
+            parse_mode="Markdown"
+        )
+    else:
+        await callback.message.answer("❌ Файл гайда не найден. Пожалуйста, свяжитесь с поддержкой.")
+
+
 # Обработчик кнопки "Помощь"
 @dp.callback_query(F.data == "show_help")
 async def process_show_help(callback: CallbackQuery):
