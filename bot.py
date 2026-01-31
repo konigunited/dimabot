@@ -250,7 +250,7 @@ async def process_guide_speak_english(callback: CallbackQuery):
     
     # Абсолютный путь относительно текущего файла
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    guide_path = os.path.join(base_dir, "assets", "гайды", "Гайд_Как_начать_говорить_на_английском,_даже_если_слова_вылетают (1).pdf")
+    guide_path = os.path.join(base_dir, "assets", "гайды", "guide_speak_english.pdf")
     
     logger.info(f"Путь к гайду: {guide_path}")
     logger.info(f"Файл существует: {os.path.exists(guide_path)}")
