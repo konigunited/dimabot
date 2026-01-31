@@ -248,7 +248,12 @@ async def process_guide_speak_english(callback: CallbackQuery):
     """Отправить гайд 'Как начать говорить на английском'"""
     await callback.answer("📎 Отправляю гайд...")
     
-    guide_path = "assets/гайды/Гайд_Как_начать_говорить_на_английском,_даже_если_слова_вылетают.pdf"
+    # Абсолютный путь относительно текущего файла
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    guide_path = os.path.join(base_dir, "assets", "гайды", "Гайд_Как_начать_говорить_на_английском,_даже_если_слова_вылетают (1).pdf")
+    
+    logger.info(f"Путь к гайду: {guide_path}")
+    logger.info(f"Файл существует: {os.path.exists(guide_path)}")
     
     if os.path.exists(guide_path):
         document = FSInputFile(guide_path)
@@ -258,7 +263,7 @@ async def process_guide_speak_english(callback: CallbackQuery):
             parse_mode="Markdown"
         )
     else:
-        await callback.message.answer("❌ Файл гайда не найден. Пожалуйста, свяжитесь с поддержкой.")
+        await callback.message.answer(f"❌ Файл гайда не найден: {guide_path}")
 
 
 # Обработчик кнопки "Помощь"
