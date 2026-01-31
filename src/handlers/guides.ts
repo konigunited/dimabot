@@ -1,6 +1,8 @@
-import { Context } from 'grammy';
+import { Context, InputFile } from 'grammy';
 import { InlineKeyboard } from 'grammy';
 import { CallbackAction } from '../types';
+import path from 'path';
+import fs from 'fs';
 
 // Данные о гайдах
 export interface Guide {
@@ -12,16 +14,14 @@ export interface Guide {
 }
 
 // Список доступных гайдов
-// TODO: Добавить реальные гайды
 export const guides: Guide[] = [
-    // Пример структуры:
-    // {
-    //   id: 'places_guide',
-    //   emoji: '📍',
-    //   title: 'Гайд по местам',
-    //   description: 'Научись говорить о местах без зубрёжки',
-    //   fileUrl: 'assets/гайды/places.pdf'
-    // }
+    {
+        id: 'speak_english',
+        emoji: '📖',
+        title: 'Как начать говорить на английском',
+        description: 'Научись передавать смысл, даже если слово вылетело из головы. Получай мини-урок и применяй знания уже сегодня!',
+        fileUrl: 'assets/гайды/Гайд_Как_начать_говорить_на_английском,_даже_если_слова_вылетают (1).pdf'
+    }
 ];
 
 // Сообщение для меню гайдов
@@ -69,7 +69,7 @@ export async function handleGuidesMenu(ctx: Context) {
 
 // Обработчик выбора конкретного гайда
 export async function handleGuideSelection(ctx: Context) {
-    await ctx.answerCallbackQuery();
+    await ctx.answerCallbackQuery('📎 Отправляю гайд...');
 
     const data = ctx.callbackQuery?.data;
     if (!data) return;
@@ -84,10 +84,17 @@ export async function handleGuideSelection(ctx: Context) {
 
     // Отправляем PDF файл
     try {
-        await ctx.replyWithDocument(guide.fileUrl, {
-            caption: `${guide.emoji} **${guide.title}**\n\n${guide.description}`,
-            parse_mode: 'Markdown',
-        });
+        const pdfPath = path.join(process.cwd(), guide.fileUrl);
+
+        if (fs.existsSync(pdfPath)) {
+            await ctx.replyWithDocument(new InputFile(pdfPath), {
+                caption: `${guide.emoji} **${guide.title}**\n\n${guide.description}`,
+                parse_mode: 'Markdown',
+            });
+        } else {
+            console.error(`Файл гайда не найден: ${pdfPath}`);
+            await ctx.reply('❌ Файл гайда не найден. Пожалуйста, свяжитесь с поддержкой.');
+        }
     } catch (error) {
         console.error('Ошибка отправки гайда:', error);
         await ctx.reply('❌ Не удалось отправить гайд. Попробуйте позже.');
