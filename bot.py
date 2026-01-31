@@ -66,13 +66,20 @@ async def process_lesson_task1_answer(callback: CallbackQuery):
 
     if callback.data == "lesson_task1_a":
         response = "✅ Правильно!\n\n" + config.LESSON_TASK1_EXPLANATION
+        await callback.message.answer(
+            text=response,
+            reply_markup=get_lesson_task1_next()
+        )
     else:
-        response = "❌ Неправильно. Правильный ответ: a) kitchen\n\n" + config.LESSON_TASK1_EXPLANATION
+        # Мягкая подсказка вместо "Неправильно"
+        hint = """🤔 Где люди готовят?
 
-    await callback.message.answer(
-        text=response,
-        reply_markup=get_lesson_task1_next()
-    )
+🏠 Кухня — kitchen
+🛏 Спальня — bedroom
+🛁 Ванная — bathroom
+
+Жми на правильный ответ :)"""
+        await callback.message.answer(text=hint)
 
 
 # Переход к заданию 2 - викторина с множественным выбором
@@ -93,12 +100,12 @@ async def process_lesson_task2(callback: CallbackQuery):
     await callback.message.answer_poll(
         question="Выбери предметы, которые относятся к аэропорту:",
         options=[
-            "a plane",
-            "a latter",
-            "a suitcase",
-            "a cat",
-            "a flight ticket",
-            "a gate"
+            "a plane — самолёт",
+            "a ladder — лестница",
+            "a suitcase — чемодан",
+            "a cat — кошка",
+            "a flight ticket — посадочный талон",
+            "a gate — выход на посадку"
         ],
         type="regular",  # Обычный poll, не quiz
         allows_multiple_answers=True,  # Разрешаем выбор нескольких вариантов
@@ -138,13 +145,18 @@ async def process_lesson_task3_answer(callback: CallbackQuery):
 
     if callback.data == "lesson_task3_a":
         response = "✅ Правильно!\n\n" + config.LESSON_TASK3_EXPLANATION
+        await callback.message.answer(
+            text=response,
+            reply_markup=get_lesson_task3_next()
+        )
     else:
-        response = "❌ Неправильно. Правильный ответ: a) café\n\n" + config.LESSON_TASK3_EXPLANATION
+        # Мягкая подсказка с текстом аудио под спойлером
+        hint = """🤔 Можешь послушать ещё раз или прочитать текст ниже:
 
-    await callback.message.answer(
-        text=response,
-        reply_markup=get_lesson_task3_next()
-    )
+||I sit, drink coffee and watch people walking outside.||
+
+Жми на правильный ответ :)"""
+        await callback.message.answer(text=hint, parse_mode="MarkdownV2")
 
 
 # Переход к заданию 4 (финал с мотивацией и предложением курса)
@@ -389,7 +401,8 @@ async def process_check_payment(callback: CallbackQuery):
                     document,
                     caption=f"🎉 **{prompt['title']}**\n\nСпасибо за покупку!\n\n"
                             f"Скопируй текст из PDF и вставь в ChatGPT (DeepSeek, Claude, Gemini или любую LLM).\n"
-                            f"Начинай тренировку!",
+                            f"Начинай тренировку!\n\n"
+                            f"⚠️ Внимательно читай инструкции!",
                     parse_mode="Markdown"
                 )
                 logger.info(f"Промпт {prompt_id} отправлен пользователю {user_id}")

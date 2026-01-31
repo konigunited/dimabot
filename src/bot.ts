@@ -23,6 +23,7 @@ import {
   handlePollCheck,
   handleAudioAnswer,
 } from './handlers/courses';
+import { handleGuidesMenu, handleGuideSelection } from './handlers/guides';
 import { CallbackAction } from './types';
 
 // Инициализация бота
@@ -55,6 +56,10 @@ bot.callbackQuery(CallbackAction.HELP, handleHelp);
 
 // Кнопка "Поддержка"
 bot.callbackQuery(CallbackAction.SUPPORT, handleSupport);
+
+// Кнопка "Гайды"
+bot.callbackQuery(CallbackAction.GUIDES_MENU, handleGuidesMenu);
+bot.callbackQuery(/^guide:/, handleGuideSelection);
 
 // ==================== ОБРАБОТЧИКИ ПРОМПТОВ ====================
 

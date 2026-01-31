@@ -5,15 +5,16 @@ import { CallbackAction } from '../types';
 
 // ========== ГЛАВНОЕ МЕНЮ ==========
 
-// Главное меню при /start (выбор: Промпты / Курсы)
+// Главное меню при /start (выбор: Курсы / Промпты / Гайды / Помощь)
 export function getMainMenuKeyboard() {
   return new InlineKeyboard()
-    .text('📝 Промпты', CallbackAction.PROMPTS_MENU)
+    .text('📚 Курсы', CallbackAction.COURSES_MENU)
     .row()
-    .text('🎓 Курсы', CallbackAction.COURSES_MENU)
+    .text('💡 Промты', CallbackAction.PROMPTS_MENU)
     .row()
-    .text('❓ Помощь', CallbackAction.HELP)
-    .text('💬 Поддержка', CallbackAction.SUPPORT);
+    .text('📕 Гайды', CallbackAction.GUIDES_MENU)
+    .row()
+    .text('❓ Помощь', CallbackAction.HELP);
 }
 
 // ========== МЕНЮ ПРОМПТОВ ==========

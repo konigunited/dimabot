@@ -51,6 +51,7 @@ export enum CallbackAction {
   MAIN_MENU = 'main_menu',
   PROMPTS_MENU = 'prompts_menu',
   COURSES_MENU = 'courses_menu',
+  GUIDES_MENU = 'guides_menu',
 
   // Действия для курсов
   COURSE = 'course',

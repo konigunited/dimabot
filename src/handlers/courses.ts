@@ -146,7 +146,7 @@ async function showLesson(ctx: Context, courseId: string, lessonIndex: number) {
   if (lessonIndex >= course.lessons.length) {
     const message = `🎯 **Готов продолжить обучение?**
 
-В полном мини-курсе ты научишься обходить забытые слова через смысл, не через зубрёжку.
+В полном мини-уроке ты научишься обходить забытые слова через смысл, не через зубрёжку.
 
 🎧 Аудио
 🎮 Интерактив
@@ -302,7 +302,34 @@ ${lesson.explanation || ''}`;
       parse_mode: 'Markdown',
     });
   } else {
-    await ctx.answerCallbackQuery('❌ Не то, попробуй ещё раз!');
+    await ctx.answerCallbackQuery();
+
+    // Мягкая подсказка вместо "Неправильно"
+    const options = lesson.options || [];
+    let hint = '';
+
+    // Специальная подсказка для урока 1 (Куда ты идешь)
+    if (lesson.id === 'lesson_1' || lessonIndex === 0) {
+      hint = `🤔 Где люди готовят?
+
+🏠 Кухня — kitchen
+🛏 Спальня — bedroom
+🛁 Ванная — bathroom
+
+Жми на правильный ответ :)`;
+    } else {
+      // Общая подсказка для других уроков
+      hint = `🤔 Подумай ещё раз!
+
+Варианты:
+${options.map((opt: string, i: number) => `• ${opt}`).join('\n')}
+
+Жми на правильный ответ :)`;
+    }
+
+    await ctx.reply(hint, {
+      parse_mode: 'Markdown',
+    });
   }
 }
 
@@ -337,6 +364,42 @@ ${lesson.explanation || ''}`;
 }
 
 export async function handleAudioAnswer(ctx: Context) {
-  // Аналогично handleQuizAnswer
-  await handleQuizAnswer(ctx);
+  if (!ctx.callbackQuery?.data) return;
+
+  const parts = ctx.callbackQuery.data.split(':');
+  const courseId = parts[1];
+  const lessonIndex = parseInt(parts[2]);
+  const answerIndex = parseInt(parts[3]);
+
+  const course = getCourseById(courseId);
+  if (!course) return;
+
+  const lesson = course.lessons[lessonIndex];
+  const isCorrect = lesson.correctAnswer === answerIndex;
+
+  if (isCorrect) {
+    await ctx.answerCallbackQuery('✅ Правильно!');
+
+    const message = `✅ **Правильно!**
+
+${lesson.explanation || ''}`;
+
+    await ctx.reply(message, {
+      reply_markup: getNextLessonKeyboard(courseId, lessonIndex),
+      parse_mode: 'Markdown',
+    });
+  } else {
+    await ctx.answerCallbackQuery();
+
+    // Мягкая подсказка с текстом аудио под спойлером
+    const hint = `🤔 Можешь послушать ещё раз или прочитать текст ниже:
+
+||I sit, drink coffee and watch people walking outside\\.||
+
+Жми на правильный ответ :)`;
+
+    await ctx.reply(hint, {
+      parse_mode: 'MarkdownV2',
+    });
+  }
 }

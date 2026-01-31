@@ -97,6 +97,8 @@ async function sendPromptToUser(userId: number, promptId: string) {
 3️⃣ Вставь в ChatGPT (или любую LLM: DeepSeek, Claude, Gemini)
 4️⃣ Начинай тренировку 🔥
 
+⚠️ **Внимательно читай инструкции!**
+
 💡 Хочешь больше промптов? Нажми кнопку ниже 👇`;
 
     await bot.api.sendMessage(userId, instructionMessage, {
