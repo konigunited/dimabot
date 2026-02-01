@@ -43,7 +43,8 @@ async def cmd_start(message: Message):
     """Обработчик команды /start"""
     await message.answer(
         text=config.WELCOME_TEXT,
-        reply_markup=get_start_keyboard()
+        reply_markup=get_start_keyboard(),
+        parse_mode="HTML"
     )
 
 
@@ -100,12 +101,12 @@ async def process_lesson_task2(callback: CallbackQuery):
     await callback.message.answer_poll(
         question="Выбери предметы, которые относятся к аэропорту:",
         options=[
-            "a plane — самолёт",
-            "a ladder — лестница",
-            "a suitcase — чемодан",
-            "a cat — кошка",
-            "a flight ticket — посадочный талон",
-            "a gate — выход на посадку"
+            "a plane",
+            "a ladder",
+            "a suitcase",
+            "a cat",
+            "a flight ticket",
+            "a gate"
         ],
         type="regular",  # Обычный poll, не quiz
         allows_multiple_answers=True,  # Разрешаем выбор нескольких вариантов
