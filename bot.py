@@ -190,7 +190,8 @@ async def process_back_to_start(callback: CallbackQuery):
     await callback.answer()
     await callback.message.answer(
         text=config.WELCOME_TEXT,
-        reply_markup=get_start_keyboard()
+        reply_markup=get_start_keyboard(),
+        parse_mode=ParseMode.HTML
     )
 
 
