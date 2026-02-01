@@ -5,6 +5,7 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.filters import CommandStart
 from aiogram.types import Message, CallbackQuery, FSInputFile
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.enums import ParseMode
 
 import config
 from keyboards.inline import (
@@ -44,7 +45,7 @@ async def cmd_start(message: Message):
     await message.answer(
         text=config.WELCOME_TEXT,
         reply_markup=get_start_keyboard(),
-        parse_mode="HTML"
+        parse_mode=ParseMode.HTML
     )
 
 
