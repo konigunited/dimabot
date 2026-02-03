@@ -78,7 +78,8 @@ def get_lesson_task4_keyboard(course_url):
     """Финальная клавиатура для задания 4"""
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="🚀 Пройти мини-урок 'Места'", url=course_url)],
-        [InlineKeyboardButton(text="◀️ Назад к курсам", callback_data="show_courses")]
+        [InlineKeyboardButton(text="◀️ Назад к курсам", callback_data="show_courses")],
+        [InlineKeyboardButton(text="🏠 Главное меню", callback_data="back_to_start")]
     ])
     return keyboard
 

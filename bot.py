@@ -152,13 +152,13 @@ async def process_lesson_task3_answer(callback: CallbackQuery):
             reply_markup=get_lesson_task3_next()
         )
     else:
-        # Мягкая подсказка с текстом аудио под спойлером
+        # Мягкая подсказка с текстом аудио
         hint = """🤔 Можешь послушать ещё раз или прочитать текст ниже:
 
-||I sit, drink coffee and watch people walking outside.||
+"I sit, drink coffee and watch people walking outside."
 
 Жми на правильный ответ :)"""
-        await callback.message.answer(text=hint, parse_mode="MarkdownV2")
+        await callback.message.answer(text=hint)
 
 
 # Переход к заданию 4 (финал с мотивацией и предложением курса)
